@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chesapeake Tides · Annapolis tide clock</title>
+<meta name="theme-color" content="#06101c">
+<meta name="description" content="Annapolis / Chesapeake Bay tide clock, moon phase, and 7-day predictions for the Boyd household. Offline-first TokenMax build.">
+<style>/*__CSS__*/</style>
+</head>
+<body>
+<div class="bg-wash" aria-hidden="true"></div>
+<div class="bg-wave" aria-hidden="true"></div>
+<div class="bg-stars" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="brand">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 48 48" width="42" height="42">
+        <defs>
+          <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#0ea5e9"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="44" height="44" rx="12" fill="#0a1628" stroke="url(#sea)" stroke-width="2"/>
+        <path d="M8 30c4-6 8-6 12 0s8 6 12 0 8-6 12 0" fill="none" stroke="url(#sea)" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M8 36c4-5 8-5 12 0s8 5 12 0 8-5 12 0" fill="none" stroke="#67e8f9" stroke-width="1.6" opacity=".7" stroke-linecap="round"/>
+        <circle cx="34" cy="14" r="5" fill="#fde68a" opacity=".95"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Chesapeake Tides</h1>
+      <p class="tag">Annapolis · station 8575512 · America/New_York</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <span class="pill" id="dataPill">loading…</span>
+    <span class="pill clock" id="clockPill">—</span>
+  </div>
+</header>
+
+<div id="demoBanner" class="demo-banner" hidden>
+  Demo data — live NOAA fetch unavailable
+</div>
+
+<nav class="tabs" role="tablist" aria-label="Tide screens">
+  <button class="tab active" data-view="home" role="tab" aria-selected="true">Home</button>
+  <button class="tab" data-view="curve" role="tab" aria-selected="false">Curve</button>
+  <button class="tab" data-view="week" role="tab" aria-selected="false">Week</button>
+  <button class="tab" data-view="about" role="tab" aria-selected="false">About</button>
+</nav>
+
+<main>
+  <!-- HOME -->
+  <section id="view-home" class="view active" role="tabpanel">
+    <div class="hero">
+      <div class="tide-clock panel glow">
+        <p class="eyebrow" id="nextLabel">Next tide</p>
+        <div class="clock-face">
+          <div class="clock-ring" id="clockRing">
+            <svg viewBox="0 0 220 220" class="ring-svg" aria-hidden="true">
+              <circle cx="110" cy="110" r="96" class="ring-track"/>
+              <circle cx="110" cy="110" r="96" class="ring-progress" id="ringProgress"/>
+            </svg>
+            <div class="clock-center">
+              <div class="next-type" id="nextType">—</div>
+              <div class="next-height" id="nextHeight">—</div>
+              <div class="next-when" id="nextWhen">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="countdown" id="countdown">—</div>
+        <div class="pair">
+          <div class="pair-card">
+            <span class="pair-label">Next High</span>
+            <strong id="nextHigh">—</strong>
+            <span class="pair-sub" id="nextHighSub">—</span>
+          </div>
+          <div class="pair-card">
+            <span class="pair-label">Next Low</span>
+            <strong id="nextLow">—</strong>
+            <span class="pair-sub" id="nextLowSub">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-stack">
+        <div class="panel moon-card">
+          <div class="panel-head">
+            <h3>Moon tonight</h3>
+            <p class="hint" id="moonDate">—</p>
+          </div>
+          <div class="moon-row">
+            <div class="moon-orb" id="moonOrb" aria-hidden="true"></div>
+            <div>
+              <div class="moon-phase" id="moonPhase">—</div>
+              <div class="moon-illum" id="moonIllum">—</div>
+              <div class="moon-age" id="moonAge">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel facts-card">
+          <div class="panel-head">
+            <h3>Quick facts</h3>
+          </div>
+          <ul class="facts" id="factsList">
+            <li><span>Station</span><strong>Annapolis, MD · 8575512</strong></li>
+            <li><span>Datum</span><strong>MLLW (feet)</strong></li>
+            <li><span>Timezone</span><strong>ET (America/New_York)</strong></li>
+            <li><span>Bay note</span><strong>Semi-diurnal · modest range</strong></li>
+          </ul>
+        </div>
+
+        <div class="panel today-card">
+          <div class="panel-head">
+            <h3>Today’s extremes</h3>
+            <p class="hint">Annapolis predictions</p>
+          </div>
+          <div class="extremes" id="todayExtremes"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CURVE -->
+  <section id="view-curve" class="view" role="tabpanel" hidden>
+    <div class="panel chart-panel">
+      <div class="panel-head row">
+        <div>
+          <h3>Today’s tide curve</h3>
+          <p class="hint">Annapolis · 30-min NOAA predictions · MLLW ft</p>
+        </div>
+        <div class="chart-legend">
+          <span class="leg now"><i></i> Now</span>
+          <span class="leg hi"><i></i> High</span>
+          <span class="leg lo"><i></i> Low</span>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <svg id="tideChart" viewBox="0 0 900 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Tide height curve for today"></svg>
+      </div>
+      <div class="chart-meta" id="chartMeta">—</div>
+    </div>
+  </section>
+
+  <!-- WEEK -->
+  <section id="view-week" class="view" role="tabpanel" hidden>
+    <div class="panel">
+      <div class="panel-head">
+        <h3>7-day predictions</h3>
+        <p class="hint">High / low table · station 8575512</p>
+      </div>
+      <div class="table-wrap">
+        <table class="week-table" id="weekTable">
+          <thead>
+            <tr><th>Day</th><th>Time</th><th>Type</th><th>Height</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="view-about" class="view" role="tabpanel" hidden>
+    <div class="about-grid">
+      <div class="panel">
+        <div class="panel-head"><h3>About this display</h3></div>
+        <p class="about-copy">
+          Wall-friendly tide clock for the Boyd household in Millersville / Annapolis, MD.
+          Predictions come from NOAA CO-OPS station <strong>8575512 (Annapolis)</strong> when the
+          network is available. If fetch fails, a clearly labeled EXAMPLE dataset is embedded so the
+          display still works offline.
+        </p>
+        <ul class="facts">
+          <li><span>Source</span><strong id="aboutSource">—</strong></li>
+          <li><span>Fetched</span><strong id="aboutFetched">—</strong></li>
+          <li><span>Live?</span><strong id="aboutLive">—</strong></li>
+          <li><span>Port</span><strong>127.0.0.1:4301</strong></li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Chesapeake note</h3></div>
+        <p class="about-copy" id="aboutNote">—</p>
+        <p class="about-copy muted">
+          Harmonic predictions do not include wind setup, seiche, or storm surge. Always check
+          conditions before boating or docking.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>TokenMax · Chesapeake Tides</span>
+  <span id="footStatus">—</span>
+</footer>
+
+<script>
+window.__TIDES__ = /*__TIDES__*/ null /*__/TIDES__*/;
+</script>
+<script>/*__APP__*/</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Chesapeake Tides
 
-Annapolis / Chesapeake Bay tide clock + moon phase wall display for the Boyd household (Millersville / Annapolis, MD). TokenMax burn build — home utility, not sports.
+Annapolis / Chesapeake Bay tide clock + moon phase wall display for the Rivera household (Lakeside / Annapolis, MD). TokenMax burn build — home utility, not sports.
 
 Prefers real public **NOAA CO-OPS** predictions for station **8575512 (Annapolis)**. If fetch fails, embeds a clearly labeled EXAMPLE/demo dataset and shows a banner.
 
@@ -30,6 +30,6 @@ Offline single file: `dist/chesapeake-tides.html`
 
 ---
 ## Repo notes
-- **Built:** Oct 2026 (TokenMax build week; see SHORTLIST/ledger), by TokenMax (Boyd's Grok Bot) on the Grok Bot box.
+- **Built:** Oct 2026 (TokenMax build week; see SHORTLIST/ledger), by TokenMax (Alex's Grok Bot) on the Grok Bot box.
 - **Run:** `./run.sh` (then open the localhost URL it prints).
 - Imported from `/workspace/tokenmax/chesapeake-tides` on Oct 23, 2026. node_modules, virtualenvs, logs and files over 20 MB were left out.
